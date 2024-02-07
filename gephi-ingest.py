@@ -21,6 +21,8 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS Followers (
                     followee INTEGER,
                     follower_name TEXT,
                     followee_name TEXT,
+                    follower_followers_count INTEGER,
+                    followee_followers_count INTEGER,
                     FOREIGN KEY (follower) REFERENCES Users(id),
                     FOREIGN KEY (followee) REFERENCES Users(id)
                 )''')
@@ -38,15 +40,15 @@ def process_user_json_file(file_path):
 def process_follow_json_file(file_path, user):
     total_lines = sum(1 for line in open(file_path))
     if 'follower' in file_path:
-        columns = '(follower, followee, follower_name, followee_name)'
+        columns = '(follower, followee, follower_name, followee_name, follower_followers_count, followee_followers_count)'
     else:
-        columns = '(followee, follower, followee_name, follower_name)'
+        columns = '(followee, follower, followee_name, follower_name, followee_followers_count, follower_followers_count)'
 
     with open(file_path, 'r') as f:
-            for line in tqdm(f, total=total_lines, desc=file_path, unit=' lines', leave=False):
+            for line in tqdm(f, total=total_lines, desc=file_path, unit=' lines'):
                 try:
                     follow = json.loads(line)
-                    cursor.execute('INSERT OR IGNORE INTO Followers ' + columns + ' VALUES (?, ?, ?, ?)', (user['id'], follow['id'], user['username'], follow['username']))
+                    cursor.execute('INSERT OR IGNORE INTO Followers ' + columns + ' VALUES (?, ?, ?, ?, ?, ?)', (user['id'], follow['id'], user['username'], follow['username'], user['followersCount'], follow['followersCount']))
                 except json.JSONDecodeError:
                     print(f"Invalid JSON fragment in {file_path}: {line}")
 
