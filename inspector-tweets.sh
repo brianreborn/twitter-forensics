@@ -1,6 +1,6 @@
 #!/bin/sh
 u="$1"
-mkdir -p @"$u"/tweets
+mkdir -p @"$u"
 
 o=@"$u"/user.json
 test ! -f "$o" &&

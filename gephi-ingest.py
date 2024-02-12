@@ -64,14 +64,12 @@ def main(directory):
             user = -1
             for file in os.listdir(entry_path):
                 file_path = os.path.join(entry_path, file)
-                if file.endswith('.json'):
-                    if 'user' in file:
-                        user = process_user_json_file(file_path)
+                if 'user.json' == file:
+                    user = process_user_json_file(file_path)
             for file in os.listdir(entry_path):
                 file_path = os.path.join(entry_path, file)
-                if file.endswith('.json'):
-                    if 'follow' in file:
-                        process_follow_json_file(file_path, user)
+                if ('following.json' == file) or ('followers.json' == file):
+                    process_follow_json_file(file_path, user)
     conn.commit()
     cursor.close()
     conn.close()
