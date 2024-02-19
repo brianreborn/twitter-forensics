@@ -17,11 +17,11 @@ def get_thread_cursor():
 def insert_nodes_edges(batch_data):
     # Insert nodes and edges SQL statements
     cursor = get_thread_cursor()
-    for follower_id, followee_id, follower_name, followee_name, follower_followers_count in batch_data:
+    for follower_id, followee_id, follower_name, followee_name, follower_followers_count, followee_followers_count in batch_data:
         while True:
             try:
-                cursor.execute("INSERT OR IGNORE INTO Nodes (id, label) VALUES (?, ?)", (follower_id, follower_name))
-                cursor.execute("INSERT OR IGNORE INTO Nodes (id, label) VALUES (?, ?)", (followee_id, followee_name))
+                cursor.execute("INSERT OR IGNORE INTO Nodes (id, label, node_size) VALUES (?, ?, log(?))", (follower_id, follower_name, follower_followers_count))
+                cursor.execute("INSERT OR IGNORE INTO Nodes (id, label, node_size) VALUES (?, ?, log(?))", (followee_id, followee_name, followee_followers_count))
                 cursor.execute("INSERT OR IGNORE INTO Edges (source, target, weight) VALUES (?, ?, ?)", (follower_id, followee_id, follower_followers_count))
                 break
             except sqlite3.OperationalError as e:
@@ -49,7 +49,8 @@ if __name__ == '__main__':
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Nodes (
           id INTEGER PRIMARY KEY,
-          label TEXT
+          label TEXT,
+          node_size FLOAT
         )
     """)
     cursor.execute("""
@@ -62,7 +63,7 @@ if __name__ == '__main__':
     """)
 
     # Get the follower and followee IDs from the followers table
-    cursor.execute("SELECT follower, followee, follower_name, followee_name, follower_followers_count FROM Followers")
+    cursor.execute("SELECT follower, followee, follower_name, followee_name, follower_followers_count, followee_followers_count FROM Followers")
     data = cursor.fetchall()
 
     # Create a pool of workers
