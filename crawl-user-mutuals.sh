@@ -6,7 +6,10 @@ SELECT DISTINCT F1.follower_name
  ON F1.follower_name = F2.followee_name AND F2.follower_name = F1.followee_name
  ORDER BY F1.follower_followers_count ASC;
 SQL
-for user in `cat $u`; do
-	(cd .. && ./inspector.sh $user)
-	ln -s ../@$user
+for step in following followers; do
+	for user in `cat $u`; do
+		(cd .. && ./inspector-$step.sh $user) &&
+			test ! -l "./@$user" &&
+			ln -s ../@$user
+	done
 done

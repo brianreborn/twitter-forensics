@@ -22,7 +22,7 @@ def insert_nodes_edges(batch_data):
             try:
                 cursor.execute("INSERT OR IGNORE INTO Nodes (id, label, node_size) VALUES (?, ?, log(?))", (follower_id, follower_name, follower_followers_count))
                 cursor.execute("INSERT OR IGNORE INTO Nodes (id, label, node_size) VALUES (?, ?, log(?))", (followee_id, followee_name, followee_followers_count))
-                cursor.execute("INSERT OR IGNORE INTO Edges (source, target, weight) VALUES (?, ?, ?)", (follower_id, followee_id, follower_followers_count))
+                cursor.execute("INSERT OR IGNORE INTO Edges (source, target, weight) VALUES (?, ?, log(?))", (follower_id, followee_id, follower_followers_count))
                 break
             except sqlite3.OperationalError as e:
                 if "SQLITE_BUSY" not in str(e):
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     data = cursor.fetchall()
 
     # Create a pool of workers
-    pool = multiprocessing.Pool(processes=4)
+    pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
 
     # Use tqdm to display a progress bar and keep a progress report going on the main management thread
     for batch in tqdm(range(0, len(data), 1000), desc="Processing Users", unit="user"):
