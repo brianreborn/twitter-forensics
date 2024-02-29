@@ -16,7 +16,7 @@ nusers=`wc -l $u`
 for step in following followers; do
 	n=1
 	for user in `cat $u`; do
-		printf "User $n/$nusers ($step step): $user"
+		echo "User $n/$nusers ($step step): $user"
 		n=`expr $n + 1`
 		(cd .. && ./inspector-$step.sh $user)
 		test ! -h ./@$user && ln -s ../@$user
