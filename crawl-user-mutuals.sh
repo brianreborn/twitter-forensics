@@ -1,5 +1,6 @@
 #!/bin/sh
 u=user-mutuals.csv
+limit=$1 # no default limit
 if [ -e $u ]; then
 	echo "WARN: continuing; remove $u if you wish to recurse" >&2
 	ls -l $u >&2
@@ -15,9 +16,12 @@ nusers=`wc -l $u`
 for step in following followers; do
 	n=1
 	for user in `cat $u`; do
-		printf "User $n/$nusers ($step step): $user\r"
+		printf "User $n/$nusers ($step step): $user"
 		n=`expr $n + 1`
 		(cd .. && ./inspector-$step.sh $user)
 		test ! -h ./@$user && ln -s ../@$user
+		if [ -n "$limit" ] && [ $n -gt $limit ]; then
+			break
+		fi
 	done
 done
