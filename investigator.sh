@@ -19,7 +19,7 @@ crawl-user.sh $*
 	inspector-tweet-references.sh $user
 	echo "Done gathering Tweets toward @$user."
 	echo "Gathering Likes from @$user..."
-	inspector-likes.sh
+	inspector-likes.sh $user
 	echo "Done gathering Likes from @$user."
 	echo "Done gathering extended public data for @$user."
 done) &
