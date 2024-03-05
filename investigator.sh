@@ -4,7 +4,8 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 export PATH=$PATH:`pwd`
-path=${*// /+} # user1+[user2...]
+components="$*"
+path=${components// /+} # user1+[user2...]
 mkdir -p $path
 cd $path
 test -h venv || ln -s ../venv
