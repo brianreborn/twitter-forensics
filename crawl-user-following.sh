@@ -9,9 +9,10 @@ cut -d, -f1 < user-following.csv | uniq > user-following-users.csv
 while read user; do
 	grep "^$user,[^,]*,[1-9]" < user-following.csv | head -12
 done < user-following-users.csv  | cut -d, -f2 | sort -n | uniq > user-crawl.csv
+echo "Crawling `wc -l user-crawl.csv` Followers:"
 for step in following followers; do
 	for user in `cat user-crawl.csv`; do
-		echo "Inspecting Follower: $user"
+		echo "Inspecting Follower ($step step): $user"
 		(cd .. && inspector-$step.sh $user)
 		test ! -h ./@$user && ln -s ../@$user
 	done

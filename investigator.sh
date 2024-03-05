@@ -28,16 +28,19 @@ if [ ! -e twitter_data.db ]; then
 	gephi-ingest.py .
 	gephi-digest.py
 fi
-for stage in 12 40 ''; do
+crawl_mutuals() {
+	stage=$1
 	if [ -n "$stage" ]; then
 		echo "Crawling mutuals with limit: $stage..."
 	else
 		echo "Crawling any remaining mutuals..."
 	fi
 	crawl-user-mutuals.sh $stage
-done
-echo "Crawling all accounts that follow $path..."
+}
+# Do a dozen early if we are crawling all mutuals.
+[ -n "$CRAWL_MUTUALS_MAXIMUM" ] && crawl_mutuals 12
 crawl-user-following.sh
+crawl_mutuals $CRAWL_MUTUALS_MAXIMUM
 fg
 echo "Done crawling public data for these Twitter users:"
 for user in $*; do echo "@$user"; done
