@@ -11,7 +11,8 @@ while read user; do
 done < user-following-users.csv  | cut -d, -f2 | sort -n | uniq > user-crawl.csv
 for step in following followers; do
 	for user in `cat user-crawl.csv`; do
-		(cd .. && ./inspector-$step.sh $user)
+		echo "Inspecting Follower: $user"
+		(cd .. && inspector-$step.sh $user)
 		test ! -h ./@$user && ln -s ../@$user
 	done
 done

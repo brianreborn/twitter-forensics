@@ -16,9 +16,9 @@ nusers=`wc -l $u`
 for step in following followers; do
 	n=1
 	for user in `cat $u`; do
-		echo "User $n/$nusers ($step step): $user"
+		echo "Inspecting Friend $n/$nusers ($step step): $user"
 		n=`expr $n + 1`
-		(cd .. && ./inspector-$step.sh $user)
+		(cd .. && inspector-$step.sh $user)
 		test ! -h ./@$user && ln -s ../@$user
 		if [ -n "$limit" ] && [ $n -gt $limit ]; then
 			break

@@ -36,7 +36,7 @@ for stage in 12 40 ''; do
 	fi
 	crawl-user-mutuals.sh $stage
 done
-echo "Crawling all accounts that $path is following..."
+echo "Crawling all accounts that follow $path..."
 crawl-user-following.sh
 fg
 echo "Done crawling public data for these Twitter users:"

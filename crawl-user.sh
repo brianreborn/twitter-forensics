@@ -3,7 +3,7 @@
 for step in following followers; do
 	for user in "$@"; do
 		echo "Gathering $step from @$user..."
-		(cd .. && ./inspector-$step.sh $user)
+		(cd .. && inspector-$step.sh $user)
 		test ! -h ./@$user && ln -s ../@$user
 	done
 done
