@@ -41,7 +41,7 @@ crawl_mutuals() {
 [ -n "$CRAWL_MUTUALS_MAXIMUM" ] && crawl_mutuals 12
 crawl-user-following.sh
 crawl_mutuals $CRAWL_MUTUALS_MAXIMUM
-fg
+wait
 echo "Done crawling public data for these Twitter users:"
 for user in $*; do echo "@$user"; done
 echo "Don't forget to \"cd $path && ../gephi-ingest.py . &&"
