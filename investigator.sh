@@ -40,7 +40,7 @@ crawl_mutuals() {
 # Do a dozen early if we are crawling all mutuals.
 [ -n "$CRAWL_MUTUALS_MAXIMUM" -a "x$CRAWL_MUTUALS_MAXIMUM" != "x0" ] && crawl_mutuals 12
 crawl-user-following.sh
-[ -n "$CRAWL_MUTUALS_MAXIMUM" -a "x$CRAWL_MUTUALS_MAXIMUM" != "x0" ] && crawl_mutuals $CRAWL_MUTUALS_MAXIMUM
+[ -z "$CRAWL_MUTUALS_MAXIMUM" -o "x$CRAWL_MUTUALS_MAXIMUM" != "x0" ] && crawl_mutuals $CRAWL_MUTUALS_MAXIMUM
 wait
 echo "Done crawling public data for these Twitter users:"
 for user in $*; do echo "@$user"; done
