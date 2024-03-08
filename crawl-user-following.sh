@@ -6,9 +6,17 @@ SELECT F.follower_name, F.followee_name, F.followee_followers_count
  ORDER BY U.username, F.followee_followers_count;
 SQL
 cut -d, -f1 < user-following.csv | uniq > user-following-users.csv
+
 while read user; do
 	grep "^$user,[^,]*,[1-9]" < user-following.csv | head -12
-done < user-following-users.csv  | cut -d, -f2 | sort -n | uniq > user-crawl.csv
+done < user-following-users.csv  | cut -d, -f2 > user-crawl-input.csv
+
+if [ -n "$CRAWL_FOLLOWERS_MAXIMUM" ]; then
+	head -n $CRAWL_FOLLOWERS_MAXIMUM | sort -n
+else
+	sort -n
+fi < user-crawl-input.csv > user-crawl.csv
+
 echo "Crawling `wc -l user-crawl.csv` Followers:"
 for step in following followers; do
 	for user in `cat user-crawl.csv`; do
