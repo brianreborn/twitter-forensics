@@ -15,7 +15,7 @@ if [ -n "$CRAWL_FOLLOWERS_MAXIMUM" ]; then
 	head -n $CRAWL_FOLLOWERS_MAXIMUM | sort -n
 else
 	sort -n
-fi < user-crawl-input.csv > user-crawl.csv
+fi < user-crawl-input.csv | uniq > user-crawl.csv
 
 echo "Crawling `wc -l user-crawl.csv` Followers:"
 for step in following followers; do
