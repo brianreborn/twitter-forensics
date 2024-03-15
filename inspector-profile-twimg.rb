@@ -7,9 +7,11 @@
 require 'tempfile'
 
 user_json_patterns = ARGV.collect {|arg| "@#{arg}/user.json"}
-entries = []
 USER_FIELDS = %w(id_str username profileImageUrl profileBannerUrl)
-USER_URL_FIELDS_INDEX = 2..3
+USER_NAME_INDEX = 1
+USER_IMAGE_INDEX = 2
+USER_BANNER_INDEX = 3
+entries = []
 Dir[*user_json_patterns].each {|user_json|
   user_json = File.read(user_json)
   entries.push(USER_FIELDS.collect {|field|
@@ -20,16 +22,29 @@ Dir[*user_json_patterns].each {|user_json|
     end
   })
 }
-Tempfile.create {|profile_twimg_urls|
+
+Tempfile.create {|profile_twimg_urls_file|
+  links = []
   entries.each {|entry|
-    entry[USER_URL_FIELDS_INDEX].each {|local|
-      unless local.nil? or File.exists?(local["https://".length()..-1])
-        profile_twimg_urls.puts(local)
+    who = entry[USER_NAME_INDEX]
+    pull = lambda {|what, location|
+      unless location.nil?
+        location = location["https://".length()..-1]
+        unless File.exists?(location)
+          profile_twimg_urls_file.puts(location)
+        end
+        ["ln", "-f", location, "@#{who}/#{what}"]
       end
     }
+    links.push(pull.call("image", entry[USER_IMAGE_INDEX]))
+    links.push(pull.call("banner", entry[USER_BANNER_INDEX]))
   }
-  profile_twimg_urls.flush()
-  system("wget", "-mi", profile_twimg_urls.path)
+  profile_twimg_urls_file.flush()
+  system("wget", "-mi", profile_twimg_urls_file.path)
+  links.each {|link_command|
+    next if link_command.nil?
+    system(*link_command)
+  }
 }
 File.open("profile-twimg.csv", "w") {|w|
   w.puts(USER_FIELDS.join(","))
