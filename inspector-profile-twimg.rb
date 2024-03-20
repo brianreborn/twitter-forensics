@@ -33,7 +33,7 @@ Tempfile.create {|profile_twimg_urls_file|
         unless File.exists?(location)
           profile_twimg_urls_file.puts(location)
         end
-        ["ln", "-sf", location, "@#{who}/#{what}"]
+        ["ln", "-sf", "../#{location}", "@#{who}/#{what}"]
       end
     }
     links.push(pull.call("image", entry[USER_IMAGE_INDEX]))
