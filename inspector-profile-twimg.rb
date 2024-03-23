@@ -40,7 +40,8 @@ Tempfile.create {|profile_twimg_urls_file|
     links.push(pull.call("banner", entry[USER_BANNER_INDEX]))
   }
   profile_twimg_urls_file.flush()
-  system("wget", "-mi", profile_twimg_urls_file.path)
+  profile_twimg_urls_file.rewind()
+  system("curl", "-ZJR", "--remote-name-all", *profile_twimg_urls_file.readlines)
   links.each {|link_command|
     next if link_command.nil?
     system(*link_command)

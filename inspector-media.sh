@@ -6,13 +6,13 @@ for u in $@; do
 	m=inspector-media-$u.txt
 	jq -r "..|.media_url_https?|strings" < @$u/user_tweets_and_replies.json |
 		tee $m |
-		xargs wget -mi
+		xargs curl -ZJR --remote-name-all
 	# mirror the subdirectories but link the actual media files
 	cut -d/ -f3- < $m | (cd @$u &&
 		while read relarch; do
 			relarchsubdir=`dirname $relarch`
 			(mkdir -p $relarchsubdir &&
 				cd $relarchsubdir &&
-				ln -s $workdir/$relarch)
+				ln -fs $workdir/$relarch)
 		done)
 done
