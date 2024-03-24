@@ -23,15 +23,15 @@ Dir[*user_json_patterns].each {|user_json|
   })
 }
 
-Tempfile.create {|profile_twimg_urls_file|
+Tempfile.create {|profile_twimg_curl_file|
   links = []
   entries.each {|entry|
     who = entry[USER_NAME_INDEX]
-    pull = lambda {|what, location|
-      unless location.nil?
-        location = location["https://".length()..-1]
+    pull = lambda {|what, url|
+      unless url.nil?
+        location = url["https://".length()..-1]
         unless File.exists?(location)
-          profile_twimg_urls_file.puts(location)
+          profile_twimg_curl_file.puts("-o#{location}", url)
         end
         ["ln", "-fs", "#{Dir.pwd}/#{location}", "@#{who}/#{what}"]
       end
@@ -39,9 +39,9 @@ Tempfile.create {|profile_twimg_urls_file|
     links.push(pull.call("image", entry[USER_IMAGE_INDEX]))
     links.push(pull.call("banner", entry[USER_BANNER_INDEX]))
   }
-  profile_twimg_urls_file.flush()
-  profile_twimg_urls_file.rewind()
-  system("curl", "-ZJR", "--remote-name-all", *profile_twimg_urls_file.readlines)
+  profile_twimg_curl_file.flush()
+  profile_twimg_curl_file.rewind()
+  system("curl", "-ZR", "--create-dirs", "--remove-on-error", *profile_twimg_curl_file.readlines.collect {|l| l.chomp})
   links.each {|link_command|
     next if link_command.nil?
     system(*link_command)
